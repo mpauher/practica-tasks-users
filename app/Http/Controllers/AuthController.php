@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\Task;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -63,20 +64,27 @@ class AuthController extends Controller
         ]);
     }
 
-    public function register(Request $request){
+    public function register(Request $request): \Illuminate\Http\JsonResponse
+    {
         try{
-            dd($request->password);
             $request->validate([
                 'name' =>'required|string',
                 'email' =>'required|string',
                 'password' =>'required|string',
+                'admin_code' =>'string'
             ]);
 
-            User::create([
+            $user = User::create([
                 'name' => $request->name,
                 'email' => $request->email,
                 'password' => Hash::make($request->password),
             ]);
+
+            if ($request->admin_code && $request->admin_code == '123456') {
+                $user->assignRole('admin');
+            } else {
+                $user->assignRole('user');
+            }
 
             return response()->json([
                'message' =>'Usuario creado exitosamente'
@@ -96,7 +104,7 @@ class AuthController extends Controller
                 return response()->json();
             }
             return response()->json([
-                'users' => $users,          
+                'users' => $users,
             ], 200);
 
         }catch (\Exception $e){
@@ -127,7 +135,7 @@ class AuthController extends Controller
             if(!$user){
                 return response()->json([
                     'error' =>'User not found',
-                ],404);    
+                ],404);
             }
 
             User::destroy($id);
