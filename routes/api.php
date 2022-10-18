@@ -37,11 +37,26 @@ Route::group([
 Route::group([
     'prefix' => 'tasks'
 ], function () {
-    Route::post('create', [TaskController::class, 'create']);
-    Route::get('show', [TaskController::class, 'show']);
-    Route::get('index', [TaskController::class, 'index']);
-    Route::put('update', [TaskController::class, 'update']);
-    Route::delete('destroy', [TaskController::class, 'destroy']);
+    Route::group([
+        'prefix' =>'admin',
+        'middleware' => ['auth:api', 'role:admin'],
+    ],function(){
+        Route::post('/', [TaskController::class, 'create']);
+        Route::get('/{id}', [TaskController::class, 'show']);
+        Route::get('/', [TaskController::class, 'index']);
+        Route::put('/{id}', [TaskController::class, 'update']);
+        Route::delete('/{id}', [TaskController::class, 'destroy']);
+    });
+
+    Route::group([
+        'prefix' => 'user',
+        'middleware' => ['auth:api', 'role:user'],
+    ],function(){
+        Route::get('/{id}', [TaskController::class, 'show']);
+        Route::get('/', [TaskController::class, 'index']);
+        Route::put('/{id}', [TaskController::class, 'update']);
+    });
+
 });
 
 Route::get('/hello', function () {
