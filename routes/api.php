@@ -44,7 +44,8 @@ Route::group([
         Route::post('/', [TaskController::class, 'create']);
         Route::get('/{id}', [TaskController::class, 'show']);
         Route::get('/', [TaskController::class, 'index']);
-        Route::put('/{id}', [TaskController::class, 'update']);
+        // Route::put('/{id}', [TaskController::class, 'update']);
+        Route::put('/assign', [TaskController::class, 'assignTask']);
         Route::delete('/{id}', [TaskController::class, 'destroy']);
     });
 
@@ -53,7 +54,7 @@ Route::group([
         'middleware' => ['auth:api', 'role:user'],
     ],function(){
         Route::get('/{id}', [TaskController::class, 'show']);
-        Route::get('/', [TaskController::class, 'index']);
+        Route::get('/', [TaskController::class, 'indexByUser']);
         Route::put('/{id}', [TaskController::class, 'update']);
     });
 
